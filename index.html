@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Movie Review App</title>
+<style>
+body { font-family: Arial; background:#020617; color:white; }
+.container { width:350px; margin:50px auto; padding:20px; background:#0f172a; border-radius:10px; }
+input, select, textarea, button { width:100%; padding:8px; margin-top:8px; border-radius:5px; border:none; }
+button { background:#38bdf8; font-weight:bold; cursor:pointer; }
+table { width:100%; margin-top:15px; border-collapse: collapse; }
+th, td { border:1px solid #334155; padding:6px; font-size:13px; }
+th { background:#1e293b; }
+</style>
+</head>
+<body>
+
+<div class="container" id="auth">
+  <h3>🔐 Login</h3>
+  <input id="u" placeholder="Username">
+  <input id="p" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<div class="container" id="app" style="display:none">
+  <h3>🎬 Movie Review App</h3>
+  <input id="movie" placeholder="Movie Name">
+  <select id="type">
+    <option value="">🎬 Select Movie Type</option>
+    <option>Love / Romance ❤️</option>
+    <option>Action 🔥</option>
+    <option>Comedy 😂</option>
+    <option>Drama 🎭</option>
+    <option>Thriller 😱</option>
+    <option>Horror 👻</option>
+    <option>Sci-Fi 🚀</option>
+  </select>
+  <input id="rating" placeholder="Rating (1–5)">
+  <textarea id="comment" placeholder="Comment"></textarea>
+  <button onclick="addReview()">Add Review</button>
+
+  <table>
+    <thead>
+      <tr><th>Movie</th><th>Type</th><th>Rating</th><th>Comment</th></tr>
+    </thead>
+    <tbody id="reviews"></tbody>
+  </table>
+</div>
+
+<script>
+let currentUser = "";
+
+function login() {
+  const u = document.getElementById("u").value;
+  const p = document.getElementById("p").value;
+  if (!u||!p){alert("Enter login details"); return;}
+  currentUser = u;
+  document.getElementById("auth").style.display="none";
+  document.getElementById("app").style.display="block";
+  loadReviews();
+}
+
+function addReview() {
+  const movie = document.getElementById("movie").value;
+  const type = document.getElementById("type").value;
+  const rating = document.getElementById("rating").value;
+  const comment = document.getElementById("comment").value;
+  if(!movie||!type||!rating||!comment){alert("Fill all fields");return;}
+  const review={user:currentUser,movie,type,rating,comment};
+  let data=JSON.parse(localStorage.getItem("reviews"))||[];
+  data.push(review);
+  localStorage.setItem("reviews",JSON.stringify(data));
+  document.getElementById("movie").value="";
+  document.getElementById("type").value="";
+  document.getElementById("rating").value="";
+  document.getElementById("comment").value="";
+  loadReviews();
+}
+
+function loadReviews(){
+  const tbody=document.getElementById("reviews");
+  tbody.innerHTML="";
+  let data=JSON.parse(localStorage.getItem("reviews"))||[];
+  data.filter(r=>r.user===currentUser).forEach(r=>{
+    tbody.innerHTML+=`<tr><td>${r.movie}</td><td>${r.type}</td><td>${r.rating}</td><td>${r.comment}</td></tr>`;
+  });
+}
+</script>
+</body>
+</html>
